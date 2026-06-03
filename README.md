@@ -10,7 +10,8 @@
 
 This site is a **portfolio writing sample** demonstrating docs-as-code workflow: Markdown authoring, structured information architecture, custom CSS theming, and automated GitHub Actions deployment. It covers GemStone/S database administration across four original technical articles.
 
-[**View the live site →**](https://taz-mon.github.io/gemstone-service-docs/)
+[**View the live site →**](https://taz-mon.github.io/gemstone-service-docs/)  
+
 [**View the author's portfolio →**](https://taz-mon.github.io/tazdocs-as-code/docs/my-docs/resume/)
 
 ---

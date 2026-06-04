@@ -22,6 +22,7 @@ This site is a **portfolio writing sample** demonstrating docs-as-code workflow:
 - [Documentation coverage](#documentation-coverage)
 - [Run locally](#run-locally)
 - [Project structure](#project-structure)
+- [Article metadata](#Article metadata)
 - [Deployment](#deployment)
 - [Author](#author)
 

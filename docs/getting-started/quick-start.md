@@ -56,7 +56,7 @@ The APT track supports Ubuntu and Debian only. For Red Hat-compatible distributi
 </TabItem>
 <TabItem value="macos" label="macOS">
 
-- Intel/AMD x86_64 or Apple silicon (ARM)
+- Intel x86_64 or Apple silicon (ARM)
 - macOS 13.7.6 (Ventura) or macOS 15.5 (Sequoia)
 
 </TabItem>
@@ -120,7 +120,7 @@ Download the `.dmg` file matching your hardware:
 - `GemStone64Bit3.7.5-arm64.Darwin.dmg` (Apple silicon)
 - `GemStone64Bit3.7.5-i386.Darwin.dmg` (Intel/AMD)
 
-Download the architecture-native package. Intel binaries run on Apple silicon via Rosetta emulation, but performance will be slower.
+Download the architecture-native package. Intel binaries run on Apple silicon via Rosetta emulation, but performance is slower.
 
 </TabItem>
 </Tabs>
@@ -148,7 +148,7 @@ The distribution unpacks into a directory named `GemStone64Bit3.7.5-x86_64.Linux
 </TabItem>
 <TabItem value="linux-apt" label="Linux (APT)">
 
-The APT installation writes to `/usr/lib/` and is owned by root. Do not place your keyfile or repository files inside the GemStone distribution directory.
+The APT installation writes to `/usr/lib/` and root owns it. Do not place your keyfile or repository files inside the GemStone distribution directory.
 
 **Option A — `.deb` file:**
 
@@ -233,7 +233,7 @@ env | grep GEM
 
 ## Step 4: Run configuregs
 
-`configuregs` creates the `/opt/gemstone/locks` and `/opt/gemstone/log` directories that GemStone requires to run. On a machine with no prior GemStone installation, this step is required.
+`configuregs` creates the `/opt/gemstone/locks` and `/opt/gemstone/log` directories that GemStone requires to run. On a machine with no prior GemStone installation, you must run this step.
 
 <Tabs>
 <TabItem value="linux-zip" label="Linux (zip)" default>
@@ -312,9 +312,9 @@ macOS requires explicit shared memory configuration. Create a plist file to set 
    6144 MB × 1,048,576 = 6,442,450,944 bytes
    ```
 
-2. Create `/Library/LaunchDaemons/com.gemtalksystems.shared-memory.plist`. A template is available at [docs.gemtalksystems.com](https://docs.gemtalksystems.com/current/com.gemtalksystems.shared-memory.plist). Edit the `shmmax` and `shmall` values to match your system.
+2. Create `/Library/LaunchDaemons/com.gemtalksystems.shared-memory.plist`. A template lives at [docs.gemtalksystems.com](https://docs.gemtalksystems.com/current/com.gemtalksystems.shared-memory.plist). Edit the `shmmax` and `shmall` values to match your system.
 
-   Note: `shmmax` is in bytes; `shmall` is in 4096-byte pages (`shmmax / 4096`).
+   Here, `shmmax` is in bytes; `shmall` is in 4096-byte pages (`shmmax / 4096`).
 
 3. Apply the settings (or reboot):
    ```bash
@@ -348,7 +348,7 @@ Because the APT installation is read-only, your repository directory must be out
 $GEMSTONE/install/createNewGemStoneRepository /path/to/your/repo
 ```
 
-The directory must not exist or be empty, and must be writable. Do not use any path inside `/usr/lib/`.
+The directory must not exist or must be empty, and your `gsAdminUser` account must have write access to it. Do not use any path inside `/usr/lib/`.
 
 </TabItem>
 <TabItem value="macos" label="macOS">

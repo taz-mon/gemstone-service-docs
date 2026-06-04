@@ -246,5 +246,4 @@ When moving an application from development to production, apply security change
 
 ## What to read next
 
-- For multi-user data integrity, see [Transactions and Concurrency](../core-concepts/transactions).
 - For full UserProfile and privilege management procedures, refer to the *GemStone/S 64 Bit System Administration Guide* from GemTalk Systems.

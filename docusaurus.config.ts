@@ -76,7 +76,6 @@ const config: Config = {
           items: [
             {label: 'Platform Overview', to: '/docs/getting-started/platform-overview'},
             {label: 'Quick Start', to: '/docs/getting-started/quick-start'},
-            {label: 'Transactions & Concurrency', to: '/docs/core-concepts/transactions'},
             {label: 'Object Security', to: '/docs/reference/object-security'},
           ],
         },

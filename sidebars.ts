@@ -13,14 +13,6 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'Core Concepts',
-      collapsible: false,
-      items: [
-        'core-concepts/transactions',
-      ],
-    },
-    {
-      type: 'category',
       label: 'Reference',
       collapsible: false,
       items: [

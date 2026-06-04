@@ -1,76 +1,108 @@
 ---
-id: platform-overview
-title: Platform Overview
-sidebar_label: Platform Overview
-sidebar_position: 1
-description: Review GemStone/S basics, how its architecture works, and orient yourself to its basic mechanisms and transaction processes.
+title: "Platform Overview"
+description: "Architecture, core concepts, and use cases for GemStone/S 64 Bit, an object-oriented database server with persistent Smalltalk object storage."
+product: "GemStone/S 64 Bit"
+version: "3.7.x"
+doc_type: "conceptual"
+content_category: "getting-started"
+audience: ["evaluator", "developer", "administrator"]
+platform: ["all"]
+keywords: ["GemStone", "object database", "Smalltalk", "persistent objects", "GemStone architecture", "object-oriented database"]
+source_docs:
+  - title: "GemStone/S 64 Bit Programming Guide 3.7"
+    url: "https://downloads.gemtalksystems.com/docs/GemStone64/3.7.x/GS64-ProgGuide-3.7.pdf"
+  - title: "GemStone/S 64 Bit System Administration Guide 3.7"
+    url: "https://downloads.gemtalksystems.com/docs/GemStone64/3.7.x/GS64-SysAdminGuide-3.7.pdf"
+last_verified: "2026-06-04"
 ---
 
 # Platform Overview
 
-> Review GemStone/S basics, how its architecture works, and orient yourself to its basic mechanisms and transaction processes.
+> GemStone/S 64 Bit is a distributed, multi-user, transactional object database. This article explains what it is, how its processes fit together, and where it fits compared to a relational database.
 
 ---
 
 ## What is GemStone/S?
 
-GemStone/S 64 Bit is a high-performance, object-oriented transactional database built for mission-criticl, enterprise-scale workloads in financial services, government, healthcare, utilities, and telecommunications. GemStone/S stores Smalltalk objects in your application directly to disk without translation. Unlike a relational database, there are no tables, no rows, no ORM layer, and no SQL.
+GemStone/S 64 Bit is a server-based object database that runs GemStone Smalltalk as its query and application language. It stores objects directly to disk without translation, so you don't manage tables an ORM layer or use SQL. The platform supports thousands of concurrent users, repositories with billions of objects, and sustained transaction rates of hundreds of transactions per second.
 
-The platform has powered mission-critical operations since 1982. GemTalk Systems has continuously maintained this platform from the beginning.
+GemStone has powered mission-critical deployments in financial services, government, healthcare, utilities, and telecommunications since 1982. GemTalk Systems has maintained it continuously since that time.
 
-**GemStone/S differs from a relational database:**
+**When GemStone fits:** GemStone works well for applications with deeply nested or highly interconnected data structures, where the cost of translating objects to and from relational tables creates performance or complexity problems. It is also well suited for workloads where business logic must execute close to the data, inside the server or in GemStone Smalltalk, not in a separate application tier.
 
-As an object-oriented, transactional database, it's important to understand how it differs from transactional, relational databases common to many Software-as-a-Service (SaaS) applications.
+---
+
+## How GemStone differs from a relational database
 
 | | GemStone/S | Relational (SQL) |
 |---|---|---|
 | Storage unit | Objects with class hierarchy | Tables and rows |
 | Query language | GemStone Smalltalk predicates | SQL |
 | Schema changes | Class versioning + instance migration | `ALTER TABLE` |
-| Relationships | Direct object references | Foreign keys and JOINs |
-| Concurrency | Optimistic + pessimistic, per-object locks | Row/table locks, MVCC |
-| Scale | Billions of objects, disk-backed cache | Row-count dependent |
+| Relationships | Direct object references (OOPs) | Foreign keys and JOINs |
+| Concurrency | Optimistic and pessimistic; per-object locks; reduced-conflict collection classes | Row/table locks, MVCC |
+| Scale | Billions of objects, bounded by disk | Bounded by table and index size |
+| Application logic | Runs as Smalltalk methods inside the server | Runs in a separate application tier |
+
+The most significant architectural difference is that GemStone eliminates the object-relational impedance mismatch entirely. Data is modeled in whatever structure the application requires, including hierarchies, networks, queues, and nested collections. There are no data objects that must be assembled at query time.
 
 ---
 
-## Core concepts
+## Process architecture
 
-The five components that make up a running GemStone system include:
+A running GemStone system is made up of several cooperating processes. Understanding them helps with installation, configuration, and troubleshooting.
 
-### The Stone
+### Stone
 
-The Stone is the central resource coordinator. One Stone process manages one repository. It synchronizes all commit activity, handles transaction conflicts, and is the single point that all Gem sessions communicate with. Think of it as the equivalent of the database engine process in a relational system.
+The Stone is the central resource coordinator. One Stone process manages one repository. It synchronizes commit activity, resolves transaction conflicts, and is the single communication point for all Gem sessions. The Stone also coordinates with the Shared Cache Monitor to manage memory allocation across active sessions.
 
-### Gems
+### Gem
 
-Every user session runs inside a Gem process. The Gem executes GemStone Smalltalk, manages the session's private view of the repository, and pages objects in and out of the Shared Page Cache as needed. A running system has both user Gems (one per active session) and system maintenance Gems — including garbage collection Gems (GcGems) and a SymbolGem that manages the creation of unique symbols.
+Every user session runs inside a Gem process. The Gem executes GemStone Smalltalk, maintains the session's private snapshot view of the repository, and pages objects in and out of the Shared Page Cache as needed. A running system has both user Gems, one per active login, and one for system maintenance Gems. Maintenance Gems include GcGems, which handle garbage collection of unreferenced objects, and the SymbolGem, which manages the creation of unique canonical symbols. User Gems can be distributed across multiple servers; they do not need to run on the same host as the Stone.
 
-### The Shared Page Cache
+### NetLDI
 
-The Shared Page Cache (SPC) is a large area of shared memory used by the Stone and all Gem processes running on the same host. It is the primary performance lever in GemStone: frequently accessed objects stay in cache and don't hit disk, and large queries are prevented from flushing working data out of memory. The SPC is managed by a Shared Cache Monitor process that dynamically allocates memory to sessions based on workload.
+The NetLDI (Network Long Distance Information) process is the network broker that starts Gem processes on demand and coordinates startup when GemStone processes are needed on a different host than the one the Stone is running on. Most multi-host configurations require at least one NetLDI per server node.
 
-### Extents and the Repository
+### Shared Page Cache
 
-The repository is the logical storage unit — the GemStone equivalent of a database. Physically, a repository is stored as an ordered collection of one or more extents, which are disk files or raw partitions. A repository can hold billions of objects, each identified by a unique object-oriented pointer (OOP). Repository size is bounded by disk, not by available RAM.
+The Shared Page Cache (SPC) is a large area of shared memory used by the Stone and all Gem processes on the same host. It is the primary performance lever in GemStone: frequently accessed objects stay in cache rather than re-reading from disk, and the Shared Cache Monitor prevents large queries from flushing working data out of memory. Cache size is configurable and has a direct impact on throughput for read-heavy workloads.
 
-### The Transaction Log
+### Extents and the repository
 
-The transaction log provides point-in-time roll-forward recovery. Only log records are written at commit time — not full object pages. Object pages stay in cache for reuse. Transaction logs can be written to file systems or raw devices.
+The repository is the logical storage unit, the GemStone equivalent of a database. Physically, a repository is stored as an ordered collection of one or more extents, which are standard disk files or raw disk partitions. Repository size is bounded by disk capacity, not available RAM. A repository can contain billions of objects, each identified by a unique object-oriented pointer (OOP).
+
+### Transaction log
+
+The transaction log provides point-in-time roll-forward recovery. At commit time, only log records are written. Object pages remain in the cache for reuse, which keeps commit I/O low. Transaction logs can be written to file systems or raw devices.
 
 ---
 
 ## How object persistence works
 
-GemStone uses the Smalltalk object model. Like a single-user Smalltalk image, it consists of classes, methods, instances, and meta objects. Persistence is established by attaching new objects to other persistent objects. All objects in the repository are derived from a named root called `AllUsers`.
+GemStone uses the Smalltalk object model. Like a single-user Smalltalk image, it consists of classes, methods, instances, and meta-objects. All persistent objects in the repository descend from a named root called `AllUsers`.
 
-Once you attach an object to the persistent object graph and commit the transaction, that object becomes visible to all other authorized users. Objects that have never been attached to the persistent graph are temporary — they exist only in the session's memory and are discarded when the session ends.
+Persistence is established by attaching a new object to an already-persistent object and committing the transaction. Until that commit, the object exists only in the session's private memory and is invisible to other users. After the commit, the object becomes part of the shared repository and is visible to all authorized sessions.
 
-This is different from a relational database, where every `INSERT` statement immediately targets persistent storage. In GemStone, you can work with objects freely in memory and choose when to make them part of the shared repository.
+This is different from a relational database, where an `INSERT` immediately targets shared, durable storage. In GemStone, you work with objects freely in session memory, attach them to the persistent graph when they are ready, and commit when the transaction is complete. Objects that are never attached to the persistent graph are temporary and are discarded when the session ends.
+
+A single user may have multiple simultaneous sessions open, and each session maintains its own consistent snapshot view of the repository. Changes made by other sessions become visible after the next transaction boundary.
+
+---
+
+## Client interfaces
+
+GemStone applications can access objects and execute methods from several languages. The primary interfaces are:
+
+- **GemStone Smalltalk / Topaz** — the native command-line interface for repository operations, scripting, and development. Topaz is included with the server distribution.
+- **GemBuilder for C** — a library of C functions that provides a bridge between C application code and the GemStone repository. Included with the server distribution.
+- **GemBuilder for Smalltalk** — connects a client Smalltalk image (VisualWorks or VA Smalltalk) to a GemStone server. Distributed as a separate product.
+- **GemBuilder for Java** — a Java runtime package providing a message-forwarding interface between a Java client and a GemStone server. Distributed as a separate product.
+- **GsDevKit** — an open-source development kit providing a Pharo-compatible GemStone Smalltalk environment, available via GitHub.
 
 ---
 
 ## What to read next
 
-- If you're setting up GemStone for the first time, go to [Quick Start](./quick-start).
-- To understand how multi-user data integrity works, read [Transactions and Concurrency](../core-concepts/transactions).
+- To install GemStone on Linux or macOS, go to [Quick Start](./quick-start).
 - To configure user accounts and access control, see [Object Security](../reference/object-security).

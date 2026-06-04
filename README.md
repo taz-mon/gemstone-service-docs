@@ -99,9 +99,7 @@ gemstone-service-docs/
 ├── docs/
 │   ├── getting-started/
 │   │   ├── platform-overview.md
-│   │   └── quick-start.md
-│   ├── core-concepts/
-│   │   └── transactions.md
+│   │   └── quick-start.md      # Tabbed content: Linux zip, Linux RPM, macOS
 │   └── reference/
 │       └── object-security.md
 ├── src/
@@ -115,6 +113,20 @@ gemstone-service-docs/
 ├── docusaurus.config.ts        # Site config, navbar, footer
 └── sidebars.ts                 # Three-category sidebar structure
 ```
+
+## Article metadata
+
+Each article includes front matter structured for agent and search retrieval. The schema covers:
+
+- `title` / `description` — human-readable identity and summary
+- `product` / `version` — scopes content to GemStone/S 64 Bit 3.7.x
+- `doc_type` — Diátaxis classification: `conceptual`, `task`, `reference`, or `tutorial`
+- `content_category` — maps to the GemTalk doc set: `getting-started`, `installation`, `administration`, `programming`, `reference`, `security`
+- `audience` — one or more of `evaluator`, `developer`, `administrator`
+- `platform` — one or more of `linux`, `macos`, `windows-client`, `all`
+- `keywords` — terms optimized for search and agent retrieval
+- `source_docs` — array of authoritative GemTalk source documents with URLs, enabling accuracy traceability
+- `last_verified` — date the article content was last checked against source material
 
 ---
 

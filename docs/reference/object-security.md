@@ -1,9 +1,19 @@
 ---
-id: object-security
-title: Object Security and Authorization
-sidebar_label: Object Security
-sidebar_position: 1
-description: How GemStone/S controls access to objects through security policies, user groups, and system privileges.
+title: "Object Security"
+description: "Access control model for GemStone/S 64 Bit, covering authorization levels, user accounts, groups, and object-level permissions."
+product: "GemStone/S 64 Bit"
+version: "3.7.x"
+doc_type: "reference"
+content_category: "security"
+audience: ["developer", "administrator"]
+platform: ["all"]
+keywords: ["GemStone security", "object authorization", "user accounts", "groups", "access control", "GemStone permissions", "RBAC"]
+source_docs:
+  - title: "GemStone/S 64 Bit System Administration Guide 3.7"
+    url: "https://downloads.gemtalksystems.com/docs/GemStone64/3.7.x/GS64-SysAdminGuide-3.7.pdf"
+  - title: "GemStone/S 64 Bit Programming Guide 3.7"
+    url: "https://downloads.gemtalksystems.com/docs/GemStone64/3.7.x/GS64-ProgGuide-3.7.pdf"
+last_verified: "2026-06-04"
 ---
 
 # Object Security and Authorization
